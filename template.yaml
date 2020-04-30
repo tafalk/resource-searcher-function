@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: This template deploys Resource Searcher Function
+Parameters:
+  FunctionName:
+    Type: String
+  Environment:
+    Type: String
+    Default: dev
+  Application:
+    Type: String
+  StreamTable:
+    Type: String
+  UserTable:
+    Type: String
+  CantoTable:
+    Type: String
+Resources:
+  PlaceGetterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Ref FunctionName
+      CodeUri: ./
+      Handler: "lambda_function.lambda_handler"
+      Environment:
+        Variables:
+          STREAM_TABLE: !Ref StreamTable
+          USER_TABLE: !Ref UserTable
+          CANTO_TABLE: !Ref CantoTable
+      MemorySize: 128
+      Policies:
+        - AWSLambdaVPCAccessExecutionRole
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - "logs:*"
+                - "dynamodb:*"
+              Resource: "*"
+      Runtime: python3.8
+      Timeout: 3
+      Tags:
+        Environment: !Ref Environment
+        Application: !Ref Application
